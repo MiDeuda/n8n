@@ -1,16 +1,20 @@
-# 1️⃣ Base image
+# 1️⃣ Base
 FROM node:22-alpine
 
+# 2️⃣ Directorio de trabajo
 WORKDIR /app
 
-# 2️⃣ Copiar package.json y lockfile
-COPY package.json package-lock.json* ./
-
-# 3️⃣ Instalar dependencias con npm en lugar de pnpm
-RUN npm install --legacy-peer-deps
-
-# 4️⃣ Copiar todo el código
+# 3️⃣ Copiar todo el repo primero (necesario para workspaces)
 COPY . .
 
-# 5️⃣ CMD default
-CMD ["npm", "start"]
+# 4️⃣ Instalar pnpm global
+RUN npm install -g pnpm@latest
+
+# 5️⃣ Instalar dependencias del monorepo
+RUN pnpm install --shamefully-hoist --ignore-scripts --no-frozen-lockfile
+
+# 6️⃣ Exponer puerto de n8n
+EXPOSE 5678
+
+# 7️⃣ Comando de inicio
+CMD ["npx", "n8n"]
