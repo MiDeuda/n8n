@@ -1,26 +1,28 @@
-# Base
+# Dockerfile para Dokploy - n8n monorepo fork
+
+# 1️⃣ Imagen base
 FROM node:22-alpine
 
-# Directorio de trabajo
+# 2️⃣ Establece directorio de trabajo
 WORKDIR /app
 
-# Copiar solo package.json y pnpm-lock.yaml primero (para usar cache)
+# 3️⃣ Copiar solo package.json y lockfile
 COPY package.json pnpm-lock.yaml ./
 
-# Instalar pnpm globalmente
-RUN npm install -g pnpm
+# 4️⃣ Instalar pnpm globalmente
+RUN npm install -g pnpm@latest
 
-# Instalar dependencias (ignora overrides internos)
-RUN pnpm install --shamefully-hoist
+# 5️⃣ Instalar dependencias ignorando overrides de catálogo
+RUN pnpm install --shamefully-hoist --ignore-scripts --no-frozen-lockfile
 
-# Copiar el resto del código al contenedor
+# 6️⃣ Copiar el resto del código
 COPY . .
 
-# Build de n8n
+# 7️⃣ Build del monorepo
 RUN pnpm run build
 
-# Exponer puerto n8n
+# 8️⃣ Exponer puerto
 EXPOSE 5678
 
-# Arrancar n8n usando las variables de entorno definidas en Dokploy
-CMD ["pnpm", "run", "start:default"]
+# 🔟 Entry point
+CMD ["node", "packages/cli/bin/n8n"]
