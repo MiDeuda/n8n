@@ -10,8 +10,8 @@ COPY package.json pnpm-lock.yaml ./
 # 4️⃣ Instalar pnpm globalmente
 RUN npm install -g pnpm@latest
 
-# 5️⃣ Instalar dependencias sin fallar por overrides
-RUN pnpm install --shamefully-hoist --ignore-scripts --no-frozen-lockfile --ignore-workspace-root-check
+# 5️⃣ Instalar dependencias ignorando scripts y sin bloquear lockfile
+RUN pnpm install --shamefully-hoist --ignore-scripts --no-frozen-lockfile
 
 # 6️⃣ Copiar todo el código
 COPY . .
@@ -22,5 +22,5 @@ RUN pnpm run build
 # 8️⃣ Puerto expuesto
 EXPOSE 5678
 
-# 9️⃣ Comando por defecto (usa variables de entorno de Dokploy)
+# 9️⃣ Comando por defecto
 CMD ["pnpm", "start"]
