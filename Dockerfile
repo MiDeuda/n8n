@@ -1,26 +1,18 @@
-# 1️⃣ Imagen base
 FROM node:22-alpine
 
-# 2️⃣ Directorio de trabajo
 WORKDIR /app
 
-# 3️⃣ Copiar solo lockfile y package.json primero para cachear instalación
 COPY package.json pnpm-lock.yaml ./
 
-# 4️⃣ Instalar pnpm globalmente
 RUN npm install -g pnpm@latest
 
-# 5️⃣ Instalar dependencias ignorando scripts y sin bloquear lockfile
-RUN pnpm install --shamefully-hoist --ignore-scripts --no-frozen-lockfile
+# Usar recursive install para monorepo y saltar validación de overrides
+RUN pnpm recursive install --shamefully-hoist --ignore-scripts --no-frozen-lockfile
 
-# 6️⃣ Copiar todo el código
 COPY . .
 
-# 7️⃣ Construir n8n
 RUN pnpm run build
 
-# 8️⃣ Puerto expuesto
 EXPOSE 5678
 
-# 9️⃣ Comando por defecto
 CMD ["pnpm", "start"]
