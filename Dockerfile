@@ -1,20 +1,24 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
-# Carpeta de trabajo
 WORKDIR /app
 
-# Copiar dependencias
-COPY package.json package-lock.json ./
-RUN npm install
+# Copiar archivos de dependencias
+COPY package.json pnpm-lock.yaml ./
 
-# Copiar el resto del código
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
+# Instalar dependencias
+RUN pnpm install --frozen-lockfile
+
+# Copiar el resto del repo
 COPY . .
 
 # Build de n8n
-RUN npm run build
+RUN pnpm run build
 
-# Puerto que va a usar n8n
+# Exponer puerto
 EXPOSE 5678
 
 # Start n8n
-CMD ["npm", "run", "start"]
+CMD ["pnpm", "run", "start:default"]
